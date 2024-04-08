@@ -15,13 +15,13 @@ class UserModel(AbstractUser):
     household_name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     household_no = models.CharField(max_length=255)
-    username = None
+    username = models.CharField(max_length=255, null=True)
     
     USERNAME_FIELD = 'mobile_number' 
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
     
     #If the REQUIRED_FIELDS list is empty in your Django custom user model, 
     #it means there are no additional required fields apart from the default ones (username and password) when creating a new user.
 
     def __str__(self):
-        return self.user.username
+        return self.mobile_number
