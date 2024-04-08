@@ -9,4 +9,11 @@ class RegisterAPIView(viewsets.ModelViewSet):
     queryset = UserModel.objects.all()
     permission_classes = [permissions.AllowAny]
     
-        
+class LoginAPIView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        username = request.data['username']
+        password = request.data['password']
+
+        print(F'USERNAME = {username}')
+        print(F'PASSWORD = {password}')
