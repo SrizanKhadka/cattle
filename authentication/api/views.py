@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework import viewsets
-from authentication.api.serailizers import UserSerializer
+from authentication.api.serailizers import UserSerializer, LoginSerializer
 from authentication.models import UserModel
 from rest_framework import permissions
 from django.shortcuts import get_object_or_404
@@ -20,10 +20,4 @@ class RegisterAPIView(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     
 class LoginAPIView(TokenObtainPairView):
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            # Perform any additional actions here if needed
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer_class = LoginSerializer       
