@@ -10,10 +10,6 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
-
-
-
-
 class RegisterAPIView(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = UserModel.objects.all()

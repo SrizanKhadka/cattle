@@ -18,10 +18,11 @@ from django.contrib import admin
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
 from authentication.api.views import *
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from cattlesection.api.views import *
 
 router = DefaultRouter()
 router.register("registration", RegisterAPIView,basename="registrationView")
+router.register("cattle",CattleDetailsView,basename="cattleDetailsView")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
