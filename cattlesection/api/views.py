@@ -15,20 +15,28 @@ class CattleDetailsView(viewsets.ModelViewSet):
     pagination_class.page_size = 10
     permission_classes = [permissions.IsAuthenticated]
 
-    def perform_create(self, serializer):
+    def modify_id_name(self, serializer):
         user_serializer = UserSerializer(self.request.user)
         household_name = user_serializer.data["household_name"]
         animalId = self.request.data.get("id_name")
+        print(f'ANIMAL ID = {animalId}')
+        print(f'HOUSEHOLD NAME = {household_name}')
         animalCode = f"{household_name} - {animalId}"
-        serializer.validated_data["id_name"] = animalCode
-        print(f"ANIMAL CODE = {animalCode}")
+        return animalCode
+
+    def perform_create(self, serializer):
+        serializer.validated_data["id_name"] = self.modify_id_name(serializer=serializer)
         serializer.save(user=self.request.user)
 
     def update(self, request, *args, **kwargs):
         self.permission_classes = [permission.IsCattleOwner]
-        updated_data = super().update(request, *args, **kwargs)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.validated_data["id_name"] = self.modify_id_name(serializer=serializer)
+        self.perform_update(serializer=serializer)
         return Response(
-            {"data": updated_data.data, "message": "Cattle Updated Successfully!"}
+            {"data": serializer.data, "message": "Cattle Updated Successfully!"}
         )
 
     def destroy(self, request, *args, **kwargs):
