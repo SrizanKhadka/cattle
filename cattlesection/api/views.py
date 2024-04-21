@@ -1,11 +1,13 @@
 from rest_framework import viewsets
-from cattlesection.api.serializers import CattleSerializer
+from cattlesection.api.serializers import *
 from authentication.api.serailizers import UserSerializer
 from cattlesection.models import CattleModel
 from rest_framework import permissions
 from cattlesection.api import permission
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from django_filters import rest_framework as filters
+
 
 
 class CattleDetailsView(viewsets.ModelViewSet):
@@ -43,3 +45,60 @@ class CattleDetailsView(viewsets.ModelViewSet):
         self.permission_classes = [permission.IsCattleOwner]
         super().destroy(request, *args, **kwargs)
         return Response({"message": "Cattle Deleted Successfully!"})
+
+
+def calculate_body_weight(self,hearth_girth):
+    return hearth_girth + 5
+
+def get_animal_code(self, animal_id):
+        animal = CattleModel.objects.filter(id=animal_id).first()
+        if animal:
+            return animal.id_name
+        return None
+
+
+class WeightDetailsView(viewsets.ModelViewSet):
+    serializer_class = WeightSerializer
+    queryset = Weight.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 10
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('animal_id',)
+
+    def perform_create(self, serializer):
+        heartGirth = self.request.data['heart_girth']
+        animal_id = self.request.data['animal_id']
+
+        animal_code = get_animal_code(self=self,animal_id=animal_id)
+        weight = calculate_body_weight(self=self,hearth_girth=heartGirth)
+
+        serializer.validated_data['animal_code'] = animal_code              
+        serializer.validated_data['body_weight'] = weight
+        serializer.save()
+
+    def update(self, request, *args, **kwargs):
+        self.permission_classes = [permission.IsCattleOwner]
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+
+        heartGirth = self.request.data['heart_girth']
+        animal_id = self.request.data['animal_id']
+
+        animal_code = get_animal_code(self=self,animal_id=animal_id)
+        weight = calculate_body_weight(self=self,hearth_girth=heartGirth)
+
+        serializer.validated_data['body_weight'] = weight
+        serializer.validated_data['animal_code'] = animal_code              
+        serializer.is_valid(raise_exception=True)
+
+        self.perform_update(serializer=serializer)
+
+        return Response(
+            {"data": serializer.data, "message": "Weight Updated Successfully!"}
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        self.permission_classes = [permission.IsCattleOwner]
+        super().destroy(request, *args, **kwargs)
+        return Response({"message": "Weight Deleted Successfully!"})

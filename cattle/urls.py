@@ -23,6 +23,8 @@ from cattlesection.api.views import *
 router = DefaultRouter()
 router.register("registration", RegisterAPIView,basename="registrationView")
 router.register("cattle",CattleDetailsView,basename="cattleDetailsView")
+router.register("weight",WeightDetailsView,basename="WeightDetailsView")
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

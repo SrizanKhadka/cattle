@@ -42,6 +42,9 @@ class CattleModel(models.Model):
     sireId = models.CharField(max_length=30)
     damId = models.CharField(max_length=30)
 
+    def __str__(self):
+        return self.id_name
+    
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
     #     self._meta.get_field('breed').choices = self.get_breed_choices()
@@ -51,3 +54,15 @@ class CattleModel(models.Model):
     #         return CATTLE_BREED
     #     else:
     #         return BUFFALO_BREED
+
+class Weight(models.Model):
+    animal_id = models.IntegerField()
+    animal_code = models.CharField(max_length=30,null=True,blank=True)
+    body_weight = models.IntegerField(null=True,blank=True)
+    heart_girth = models.IntegerField()
+    weight_date = models.CharField(max_length=30)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.animal_id
