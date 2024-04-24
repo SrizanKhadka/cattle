@@ -64,7 +64,7 @@ class WeightDetailsView(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
     pagination_class.page_size = 10
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('animal_id',)
+    filterset_fields = ('animal_id',)
 
     def perform_create(self, serializer):
         heartGirth = self.request.data['heart_girth']
@@ -75,6 +75,7 @@ class WeightDetailsView(viewsets.ModelViewSet):
 
         serializer.validated_data['animal_code'] = animal_code              
         serializer.validated_data['body_weight'] = weight
+        serializer.validated_data['user'] = self.request.user
         serializer.save()
 
     def update(self, request, *args, **kwargs):
@@ -88,9 +89,10 @@ class WeightDetailsView(viewsets.ModelViewSet):
         animal_code = get_animal_code(self=self,animal_id=animal_id)
         weight = calculate_body_weight(self=self,hearth_girth=heartGirth)
 
+        serializer.is_valid(raise_exception=True)
+
         serializer.validated_data['body_weight'] = weight
         serializer.validated_data['animal_code'] = animal_code              
-        serializer.is_valid(raise_exception=True)
 
         self.perform_update(serializer=serializer)
 
@@ -102,3 +104,32 @@ class WeightDetailsView(viewsets.ModelViewSet):
         self.permission_classes = [permission.IsCattleOwner]
         super().destroy(request, *args, **kwargs)
         return Response({"message": "Weight Deleted Successfully!"})
+
+class MatingDetailsView(viewsets.ModelViewSet):
+    serializer_class = MatingSerializer
+    queryset = Mating.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 10
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('animal_id',)
+
+    def perform_create(self, serializer):
+        animal_id = self.request.data['animal_id']
+        animal_code = get_animal_code(self=self,animal_id=animal_id)
+
+        serializer.validated_data['animal_code'] = animal_code 
+
+        serializer.save(user=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        serializer =  super().update(request, *args, **kwargs)
+
+        return Response(
+            {"data": serializer.data, "message": "Mating Updated Successfully!"}
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        self.permission_classes = [permission.IsCattleOwner]
+        super().destroy(request, *args, **kwargs)
+        return Response({"message": "Mating Deleted Successfully!"})

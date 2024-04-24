@@ -5,3 +5,5 @@ from cattlesection.models import*
 
 
 admin.site.register(CattleModel)
+admin.site.register(Weight)
+admin.site.register(Mating)
