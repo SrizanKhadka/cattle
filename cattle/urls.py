@@ -25,6 +25,8 @@ router.register("registration", RegisterAPIView,basename="registrationView")
 router.register("cattle",CattleDetailsView,basename="cattleDetailsView")
 router.register("weight",WeightDetailsView,basename="WeightDetailsView")
 router.register("mating",MatingDetailsView,basename="MatingDetailsView")
+router.register("pregnancy-detection",PregnancyDetectionDetailView,basename="PregnancyDetectionDetailsView")
+
 
 
 

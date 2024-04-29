@@ -9,9 +9,6 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters import rest_framework as filters
 from datetime import datetime, timedelta
 
-
-
-
 class CattleDetailsView(viewsets.ModelViewSet):
     serializer_class = CattleSerializer
     queryset = CattleModel.objects.all()
@@ -57,6 +54,18 @@ def get_animal_code(self, animal_id):
         if animal:
             return animal.id_name
         return None
+
+def calculate_expected_doc(self, date_str):
+        # Convert the date string to a datetime object
+        date_object = datetime.strptime(date_str, "%Y-%m-%d")
+    
+        # Add the specified number of days to the date
+        new_date = date_object + timedelta(days= 285)
+    
+        # Convert the new date back to a string
+        new_date_str = new_date.strftime("%Y-%m-%d")
+    
+        return new_date_str   
 
 
 class WeightDetailsView(viewsets.ModelViewSet):
@@ -116,17 +125,7 @@ class MatingDetailsView(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('animal_id',)
 
-    def calculate_expected_doc(self, mating_date):
-        # Convert the date string to a datetime object
-        date_object = datetime.strptime(mating_date, "%Y-%m-%d")
-    
-        # Add the specified number of days to the date
-        new_date = date_object + timedelta(days= 285)
-    
-        # Convert the new date back to a string
-        new_date_str = new_date.strftime("%Y-%m-%d")
-    
-        return new_date_str        
+         
 
     def perform_create(self, serializer):
         animal_id = self.request.data['animal_id']
@@ -134,7 +133,7 @@ class MatingDetailsView(viewsets.ModelViewSet):
         mating_date = self.request.data['mating_date']
 
         serializer.validated_data['animal_code'] = animal_code 
-        serializer.validated_data['expected_doc'] = self.calculate_expected_doc(mating_date=mating_date)
+        serializer.validated_data['expected_doc'] = calculate_expected_doc(self=self,date_str=mating_date)
 
         serializer.save(user=self.request.user)
 
@@ -149,4 +148,35 @@ class MatingDetailsView(viewsets.ModelViewSet):
         self.permission_classes = [permission.IsCattleOwner]
         super().destroy(request, *args, **kwargs)
         return Response({"message": "Mating Deleted Successfully!"})
-    
+
+
+class PregnancyDetectionDetailView(viewsets.ModelViewSet):
+    serializer_class = PregnancyDetectionSerializer
+    queryset = PregnancyDetection.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 10
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('animal_id',)
+
+    def perform_create(self, serializer):
+        animal_id = self.request.data['animal_id']
+        animal_code = get_animal_code(self=self,animal_id=animal_id)
+        test_date = self.request.data['test_date']
+
+        serializer.validated_data['animal_code'] = animal_code 
+        serializer.validated_data['expected_doc'] = calculate_expected_doc(self=self,date_str=test_date)
+
+        serializer.save(user=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        serializer =  super().update(request, *args, **kwargs)
+
+        return Response(
+            {"data": serializer.data, "message": "Pregnancy Detectioin Updated Successfully!"}
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        self.permission_classes = [permission.IsCattleOwner]
+        super().destroy(request, *args, **kwargs)
+        return Response({"message": "Pregnancy Detection Deleted Successfully!"})

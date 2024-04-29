@@ -79,3 +79,22 @@ class Mating(models.Model):
 
     def __str__(self):
         return self.animal_id
+
+class PregnancyDetection(models.Model):
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name="pregnancy_detection_user",null=True)
+    test_date = models.CharField(max_length=30)
+    animal_code = models.CharField(max_length=30,default="",blank=True)
+    animal_id = models.IntegerField()
+    result = models.BooleanField()
+    technician_name = models.CharField(max_length=30)
+    expected_doc = models.CharField(max_length=30,blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    # When this option is set, the field will be set to the current date and time when an object is created for the first time.
+    # Once set during the creation, it won't change subsequently when the object is updated.
+    updated_date = models.DateTimeField(auto_now=True)
+    # When this option is set, the field will be updated to the current date and time every time the object is saved
+    # This means that every time you call save() on the model instance, the updated_date field will be updated.
+    
+
+    def __str__(self):
+        return self.technician_name

@@ -14,7 +14,7 @@ class WeightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Weight
         fields = "__all__"
-        read_only_fields = ('body_weight','animal_code')
+        read_only_fields = ('body_weight','animal_code','created_date','updated_date')
 
     def validate(self, data):
         heart_girth = data.get('heart_girth')
@@ -28,7 +28,7 @@ class MatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mating
         fields = "__all__"
-        read_only_fields = ('expected_doc','animal_code')
+        read_only_fields = ('expected_doc','animal_code','created_date','updated_date')
 
     
     def validate(self, data):
@@ -44,3 +44,9 @@ class MatingSerializer(serializers.ModelSerializer):
 
         return data
 
+class PregnancyDetectionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PregnancyDetection
+        fields = "__all__"
+        read_only_fields = ('expected_doc','animal_code','created_date','updated_date')
