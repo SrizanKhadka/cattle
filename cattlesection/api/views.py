@@ -7,6 +7,8 @@ from cattlesection.api import permission
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django_filters import rest_framework as filters
+from datetime import datetime, timedelta
+
 
 
 
@@ -114,11 +116,25 @@ class MatingDetailsView(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('animal_id',)
 
+    def calculate_expected_doc(self, mating_date):
+        # Convert the date string to a datetime object
+        date_object = datetime.strptime(mating_date, "%Y-%m-%d")
+    
+        # Add the specified number of days to the date
+        new_date = date_object + timedelta(days= 285)
+    
+        # Convert the new date back to a string
+        new_date_str = new_date.strftime("%Y-%m-%d")
+    
+        return new_date_str        
+
     def perform_create(self, serializer):
         animal_id = self.request.data['animal_id']
         animal_code = get_animal_code(self=self,animal_id=animal_id)
+        mating_date = self.request.data['mating_date']
 
         serializer.validated_data['animal_code'] = animal_code 
+        serializer.validated_data['expected_doc'] = self.calculate_expected_doc(mating_date=mating_date)
 
         serializer.save(user=self.request.user)
 
@@ -133,3 +149,4 @@ class MatingDetailsView(viewsets.ModelViewSet):
         self.permission_classes = [permission.IsCattleOwner]
         super().destroy(request, *args, **kwargs)
         return Response({"message": "Mating Deleted Successfully!"})
+    
