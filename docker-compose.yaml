@@ -1,0 +1,53 @@
+
+services:
+  web:  # Defines the "web" service, which will run the Django application.
+    build:  # Configuration for building the Docker image.
+      context: .  # Specifies the current directory (.) as the build context.
+    container_name: django_web  # Assigns a custom name to the container for easier identification.
+    command: python manage.py runserver 0.0.0.0:8000  # Command to start the Django development server on all network interfaces at port 8000.
+    ports: 
+      - "8000:8000"  # Maps port 8000 on the host machine to port 8000 inside the container, making the app accessible at http://localhost:8000.
+    volumes:
+      - .:/app  # Mounts the current directory (project files) into the `/app` directory inside the container for live development.
+      - sqlite_data:/app/db  # Creates a named volume to persist SQLite database files in the `/app/db` folder.
+    depends_on: []  # Specifies dependencies; left empty here as SQLite doesn't require a separate database service.
+
+volumes:
+  sqlite_data:  # Defines a named volume to persist data (like the SQLite database) across container restarts or removal.
+# No Database Service:
+
+# Removed the db service since SQLite doesn't require a separate server.
+# Volume for SQLite:
+
+# Added a named volume sqlite_data to persist the SQLite database file stored in the db.sqlite3 file.
+
+# When using postgress sql 
+# version: '3.8'
+
+# services:
+#   web:
+#     build:
+#       context: .
+#     container_name: django_web
+#     command: python manage.py runserver 0.0.0.0:8000
+#     ports:
+#       - "8000:8000"
+#     volumes:
+#       - .:/app
+#     depends_on:
+#       - db
+
+#   db:
+#     image: postgres:15
+#     container_name: postgres_db
+#     environment:
+#       POSTGRES_USER: django_user
+#       POSTGRES_PASSWORD: django_password
+#       POSTGRES_DB: django_db
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+
+# volumes:
+#   postgres_data:

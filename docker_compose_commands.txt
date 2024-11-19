@@ -1,0 +1,100 @@
+
+Docker Compose Commands and Their Explanations
+===============================================
+
+1. docker-compose up
+   - Purpose: Builds, creates, starts, and attaches to containers for all services defined in the `docker-compose.yml` file.
+   - Example:
+     docker-compose up
+   - Flags:
+     - -d: Runs containers in detached mode (in the background).
+       docker-compose up -d
+
+2. docker-compose down
+   - Purpose: Stops and removes containers, networks, and volumes created by `docker-compose up`.
+   - Example:
+     docker-compose down
+   - Flags:
+     - -v: Removes named volumes declared in the `volumes` section.
+       docker-compose down -v
+
+3. docker-compose build
+   - Purpose: Builds or rebuilds the Docker images specified in the `docker-compose.yml` file.
+   - Example:
+     docker-compose build
+   - Flags:
+     - --no-cache: Builds the images without using cache for a fresh build.
+       docker-compose build --no-cache
+
+4. docker-compose start
+   - Purpose: Starts services that have already been created but does not recreate them.
+   - Example:
+     docker-compose start
+
+5. docker-compose stop
+   - Purpose: Stops running containers but does not remove them.
+   - Example:
+     docker-compose stop
+
+6. docker-compose ps
+   - Purpose: Lists containers managed by Docker Compose and their statuses.
+   - Example:
+     docker-compose ps
+
+7. docker-compose exec
+   - Purpose: Executes a command inside a running container.
+   - Example:
+     docker-compose exec <service_name> <command>
+   - Example Usage:
+     - Running a shell inside the `web` service:
+       docker-compose exec web bash
+
+8. docker-compose logs
+   - Purpose: Displays logs for the services defined in the `docker-compose.yml` file.
+   - Example:
+     docker-compose logs
+   - Flags:
+     - -f: Follows log output (real-time logs).
+       docker-compose logs -f
+
+9. docker-compose config
+   - Purpose: Validates and displays the configuration of the `docker-compose.yml` file.
+   - Example:
+     docker-compose config
+
+10. docker-compose rm
+    - Purpose: Removes stopped service containers. It’s useful for cleanup after `docker-compose stop`.
+    - Example:
+      docker-compose rm
+    - Flags:
+      - -f: Force removal without confirmation.
+        docker-compose rm -f
+
+11. docker-compose restart
+    - Purpose: Restarts all the services defined in the `docker-compose.yml` file.
+    - Example:
+      docker-compose restart
+
+12. docker-compose pull
+    - Purpose: Pulls images for services from a Docker registry (e.g., Docker Hub).
+    - Example:
+      docker-compose pull
+
+13. docker-compose scale
+    - Purpose: Scales a specific service to the specified number of instances.
+    - Example:
+      docker-compose scale web=3
+    - Note: Deprecated in favor of `docker-compose up --scale`.
+
+14. docker-compose version
+    - Purpose: Displays the Docker Compose version installed on your system.
+    - Example:
+      docker-compose version
+
+15. docker-compose run
+    - Purpose: Runs a one-off command for a service (creates a new container, unlike `exec`).
+    - Example:
+      docker-compose run <service_name> <command>
+    - Example Usage:
+      - Running a Django management command:
+        docker-compose run web python manage.py migrate
